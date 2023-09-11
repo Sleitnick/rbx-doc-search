@@ -1,0 +1,36 @@
+name: Fetch Metadata
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch_metadata:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            requirements.txt
+            fetch_files.py
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+          cache: "pip"
+      - run: pip install -r requirements.txt
+
+      - env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python fetch_files.py
+
+      - id: docs_sha
+        run: echo "sha=$(cat sha.txt)" >> $GITHUB_OUTPUT
+
+      - uses: ncipollo/release-action@v1
+        with:
+          tag: "rbx_docs_${{ steps.docs_sha.outputs.sha }}"
+          artifacts: "files.json,files_metadata.json"
+          skipIfReleaseExists: true
