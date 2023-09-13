@@ -1,6 +1,6 @@
 import os
 
-token = os.environ["GH_TOKEN"]
+token = os.environ["GH_PAT"]
 
 req_headers = {
 	"Authorization": f"Bearer {token}",
