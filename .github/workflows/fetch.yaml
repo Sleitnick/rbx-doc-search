@@ -6,35 +6,45 @@ on:
   workflow_dispatch:
 
 jobs:
-  fetch_metadata:
+  fetch:
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            requirements.txt
-            fetch_files.py
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v4
+      - name: Setup python
+        uses: actions/setup-python@v4
         with:
           python-version: "3.10"
           cache: "pip"
-      - run: pip install -r requirements.txt
 
-      - env:
+      - name: Install python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Fetch Roblox API dump
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python fetch_api.py
+
+      - name: Fetch documentation metadata
+        env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python fetch_files.py
 
-      - id: docs_sha
+      - name: Grab documentation SHA
+        id: docs_sha
         run: echo "sha=$(cat sha.txt)" >> $GITHUB_OUTPUT
 
-      - id: rbx_hash
+      - name: Grab Roblox version hash
+        id: rbx_hash
         run: echo "rbx_version_hash=$(cat rbx_version_hash.txt)" >> $GITHUB_OUTPUT
 
-      - uses: ncipollo/release-action@v1
+      - name: Release
+        uses: ncipollo/release-action@v1
         with:
           tag: "rbx_docs_${{ steps.docs_sha.outputs.sha }}_${{ steps.rbx_hash.outputs.rbx_version_hash }}"
           artifacts: "files.json,files_metadata.json,api_dump.json"
