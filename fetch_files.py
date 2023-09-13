@@ -36,7 +36,7 @@ def get_metadata(md_filepath):
 
 	res = requests.get(f"https://api.github.com/repos/Roblox/creator-docs/contents/{md_filepath}?ref=main", headers=config.req_headers)
 	res.raise_for_status()
-	
+
 	content_encoded = res.json()["content"]
 	content = base64.b64decode(content_encoded.encode("utf-8")).decode("utf-8")
 	
@@ -56,7 +56,7 @@ def get_metadata(md_filepath):
 		return metadata_dict
 
 
-def fetch_files():
+if __name__ == "__main__":
 	data = fetch_tree_data()
 
 	sha = data["sha"]
@@ -76,6 +76,4 @@ def fetch_files():
 
 	write.write_text(sha[:7], "sha.txt")
 
-
-if __name__ == "__main__":
-	fetch_files()
+	print("Documentation metadata collection completed")

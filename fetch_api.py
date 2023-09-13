@@ -7,6 +7,7 @@ import write
 def fetch_latest_roblox_version():
 	"""Fetch the latest roblox version."""
 
+	print("Fetching latest Roblox version")
 	res = requests.get("http://setup.roblox.com/versionQTStudio")
 	res.raise_for_status()
 	return res.text
@@ -14,6 +15,8 @@ def fetch_latest_roblox_version():
 
 def fetch_api_dump(version):
 	"""Fetch the API dump from the given version."""
+
+	print("Fetching API dump")
 
 	info_res = requests.get(f"https://api.github.com/repos/RobloxAPI/build-archive/contents/data/production/builds/{version}/API-Dump.json?ref=master", headers=config.req_headers)
 	info_res.raise_for_status()
@@ -31,3 +34,5 @@ if __name__ == "__main__":
 
 	write.write_text(rbx_version[8:], "rbx_version_hash.txt")
 	write.write_json(api_dump, "api_dump.json")
+
+	print("API dump collection completed")
