@@ -31,8 +31,11 @@ jobs:
       - id: docs_sha
         run: echo "sha=$(cat sha.txt)" >> $GITHUB_OUTPUT
 
+      - id: rbx_hash
+        run: echo "rbx_version_hash=$(cat rbx_version_hash.txt)" >> $GITHUB_OUTPUT
+
       - uses: ncipollo/release-action@v1
         with:
-          tag: "rbx_docs_${{ steps.docs_sha.outputs.sha }}"
-          artifacts: "files.json,files_metadata.json"
+          tag: "rbx_docs_${{ steps.docs_sha.outputs.sha }}_${{ steps.rbx_hash.outputs.rbx_version_hash }}"
+          artifacts: "files.json,files_metadata.json,api_dump.json"
           skipIfReleaseExists: true

@@ -19,10 +19,24 @@ req_headers = {
 	"X-GitHub-Api-Version": "2022-11-28",
 }
 
-def write_json(data, filename):
+def write_text(data: str, filename: str):
+	with open(filename, "w", encoding="utf-8") as f:
+		f.write(data)
+
+def write_json(data, filename: str):
 	with open(filename, "w", encoding="utf-8") as f:
 		json.dump(data, f, ensure_ascii=False, indent="\t")
 		f.write("\n")
+
+def fetch_latest_roblox_version():
+	res = requests.get("http://setup.roblox.com/versionQTStudio")
+	res.raise_for_status()
+	return res.text
+
+def fetch_api_dump(version):
+	res = requests.get(f"https://api.github.com/repos/RobloxAPI/build-archive/contents/data/production/builds/{version}/API-Dump.json?ref=master")
+	res.raise_for_status()
+	return res.json()
 
 def fetch_tree_data():
 	data_res = requests.get("https://api.github.com/repos/Roblox/creator-docs/git/trees/main:content?recursive=true", headers=req_headers)
@@ -63,9 +77,14 @@ def get_metadata(md_filepath):
 		return metadata_dict
 
 def fetch_files():
+	rbx_version = fetch_latest_roblox_version()
+	api_dump = fetch_api_dump(rbx_version)
+	write_text(rbx_version[8:], "rbx_version_hash.txt")
+	write_json(api_dump, "api_dump.json")
+
 	data = fetch_tree_data()
 
-	sha = data["sha"] # TODO: Use this to decide if there's been an update (if it doesn't equal the last sha that was used)
+	sha = data["sha"]
 	tree = data["tree"]
 	truncated = data["truncated"]
 
@@ -80,8 +99,7 @@ def fetch_files():
 	all_metadata = list(map(get_metadata, md_files))
 	write_json(all_metadata, "files_metadata.json")
 
-	with open("sha.txt", "w") as f:
-		f.write(sha)
+	write_text(sha[:7], "sha.txt")
 
 if __name__ == "__main__":
 	fetch_files()
