@@ -25,13 +25,13 @@ jobs:
 
       - name: Fetch Roblox API dump
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           python fetch_api.py
 
       - name: Fetch documentation metadata
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           python fetch_files.py
 
