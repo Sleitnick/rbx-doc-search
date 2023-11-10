@@ -49,3 +49,4 @@ jobs:
           tag: "rbx_docs_${{ steps.docs_sha.outputs.sha }}_${{ steps.rbx_hash.outputs.rbx_version_hash }}"
           artifacts: "files.json,files_metadata.json,api_dump.json"
           skipIfReleaseExists: true
+          makeLatest: true
