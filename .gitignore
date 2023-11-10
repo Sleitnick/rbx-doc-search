@@ -1,4 +1,7 @@
 /creator-docs
+/__pycache__
 files.json
 files_metadata.json
+api_dump.json
 token.txt
+*.txt
