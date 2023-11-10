@@ -28,8 +28,7 @@ def fetch_tree_data():
 def get_markdown_and_yaml_files(tree):
 	md_yaml_files = list(map(
 		lambda item: "content/en-us/" + item["path"],
-		# filter(lambda item: item["type"] == "blob" and (item["path"].endswith(".md") or item["path"].endswith(".yaml")), tree)
-		filter(lambda item: item["type"] == "blob" and (item["path"].endswith(".yaml")), tree) # TEMPORARY YAML TEST
+		filter(lambda item: item["type"] == "blob" and (item["path"].endswith(".md") or item["path"].endswith(".yaml")), tree)
 	))
 
 	return md_yaml_files
