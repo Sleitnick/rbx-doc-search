@@ -47,6 +47,7 @@ def get_md_metadata(filepath, content):
 		metadata_dict = yaml.load(metadata_str, Loader=Loader)
 		
 		metadata_dict["path"] = filepath
+		metadata_dict["type"] = "article"
 		
 		return metadata_dict
 
@@ -55,6 +56,7 @@ def get_yaml_metadata(filepath, content):
 
 	metadata_dict = dict()
 	metadata_dict["title"] = data["name"]
+	metadata_dict["type"] = data["type"]
 	metadata_dict["path"] = filepath
 
 	if "summary" in data and data["summary"]:
