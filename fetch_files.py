@@ -80,7 +80,10 @@ def get_yaml_metadata(filepath, content):
 				continue
 
 			subitem = dict()
-			subitem["title"] = item["name"]
+			if data["type"] == "enum":
+				subitem["title"] = data["name"] + "." + item["name"]
+			else:
+				subitem["title"] = item["name"]
 			if "summary" in item and item["summary"]:
 				subitem["description"] = item["summary"]
 
