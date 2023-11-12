@@ -17,4 +17,10 @@ Data aggregation is automated through a daily workflow, which creates a release 
 
 The extension can be found in the `extension` and `src` directories. The `extension` directory contains the core extension code. The search algorithm has been moved over to WASM to speed up the process, which can be found in the `src` directory.
 
+### WASM Compilation
+
 To generate the WASM code, run the `build.sh` file. This will compile the code and output it within the relevant extension directory (`extension/popup/pkg`).
+
+### Package Extension
+
+Run the `package.sh` file to package the extension file.
