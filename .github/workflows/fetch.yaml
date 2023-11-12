@@ -27,13 +27,13 @@ jobs:
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          python fetch_api.py
+          python scripts/fetch_api.py
 
       - name: Fetch documentation metadata
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          python fetch_files.py
+          python scripts/fetch_files.py
 
       - name: Grab documentation SHA
         id: docs_sha
