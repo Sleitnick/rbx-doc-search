@@ -2,12 +2,14 @@
 
 This repository contains two parts:
 
-1. Data aggregation in relation to the Roblox Creator Docs.
+1. Data aggregation in relation to the Roblox Creator Docs
 2. Browser extension
 
 ## Data Aggregation
 
 Data aggregation is automated through a daily workflow, which creates a release of the aggregated data. This process is done through the Python scripts in the `scripts` directory.
+
+This process helps ensure that the extension is using up-to-date metadata for search.
 
 ## [Extension](https://chrome.google.com/webstore/detail/roblox-devhub-search/mejgpalbcgoooijaoomkcmcjeihhlehf)
 
