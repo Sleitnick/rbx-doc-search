@@ -1,4 +1,4 @@
-# ![img](extension/icons/48.png) Roblox Creator Docs Search
+# ![img](extension/icons/32.png) Roblox Creator Docs Search
 
 This repository contains two parts:
 
@@ -11,7 +11,7 @@ Data aggregation is automated through a daily workflow, which creates a release 
 
 This process helps ensure that the extension is using up-to-date metadata for search.
 
-## [Extension](https://chrome.google.com/webstore/detail/roblox-devhub-search/mejgpalbcgoooijaoomkcmcjeihhlehf)
+## [Extension](https://chromewebstore.google.com/detail/roblox-docs-search/mejgpalbcgoooijaoomkcmcjeihhlehf)
 
 The extension can be found in the `extension` and `src` directories. The `extension` directory contains the core extension code. The search algorithm has been moved over to WASM to speed up the process, which can be found in the `src` directory.
 
