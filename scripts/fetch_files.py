@@ -75,8 +75,8 @@ def get_yaml_metadata(filepath, content):
 			continue
 
 		for item in items:
-			# Skip deprecated and hidden items
-			if "tags" in item and item["tags"] is not None and ("Deprecated" in item["tags"] or "Hidden" in item["tags"]):
+			# Skip deprecated items
+			if "tags" in item and item["tags"] is not None and "Deprecated" in item["tags"]:
 				continue
 
 			subitem = dict()
