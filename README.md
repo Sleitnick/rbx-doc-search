@@ -1,4 +1,4 @@
-# Roblox Creator Docs Search
+# ![img](extension/icons/48.png) Roblox Creator Docs Search
 
 This repository contains two parts:
 
