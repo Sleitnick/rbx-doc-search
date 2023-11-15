@@ -84,9 +84,29 @@ body {
 
 #title a {
 	text-decoration: none;
-	color: hsl(0, 0%, var(--text-lum));;
+	color: hsl(0, 0%, var(--text-lum));
 }
 
 #title a:hover {
 	color: #3399FF;
+}
+
+.hide {
+	display: none;
+}
+
+.init-btn {
+	width: 100%;
+	border: 1px solid #3399FF;
+	box-shadow: 0 0 5px 0px #00000040;
+	background-color: hsl(0, 0%, var(--button-lum));
+	color: hsl(0, 0%, var(--button-text-lum));
+	border-radius: 4px;
+	padding: 10px 10px 10px 10px;
+	font-size: 16px;
+	transition: border-color 0.1s ease-out, box-shadow 0.1s ease-out, background-color 0.1s ease-out;
+}
+
+.init-btn:hover {
+	background-color: hsl(0, 0%, var(--button-hover-lum));
 }

@@ -73,6 +73,11 @@ function createResultChild(item, index) {
 	a.dataset.index = index;
 	a.className = "result-item-link";
 	a.id = `result-item-${index}`;
+	a.addEventListener("click", (e) => {
+		e.preventDefault();
+		window.open(item.url, "_blank");
+		window.close();
+	});
 	const div = document.createElement("div");
 	div.className = "result-item";
 	const h3 = document.createElement("h3");
@@ -145,7 +150,58 @@ function focusOnPrevElement() {
 	}
 }
 
+const permissions = {
+	origins: [
+		"*://*.github.com/*",
+		"*://github.com/*",
+		"*://objects.githubusercontent.com/*",
+	],
+};
+
+async function checkPermissions() {
+	if (typeof browser === "undefined") return Promise.resolve(true);
+	return await browser.permissions.contains(permissions);
+}
+
+async function attemptRequestPermissions() {
+	if (typeof browser === "undefined") return Promise.resolve(true);
+	return await browser.permissions.request(permissions);
+}
+
+async function setupPermissionRequest() {
+	const btn = document.createElement("button");
+	btn.innerText = "Grant Permissions";
+	btn.classList.add("init-btn");
+	resultsDiv.appendChild(btn);
+
+	searchForm.classList.add("hide");
+
+	let resolve;
+	let reject;
+
+	btn.addEventListener("click", async () => {
+		attemptRequestPermissions()
+			.then(resolve)
+			.catch(reject)
+			.finally(() => {
+				resultsDiv.removeChild(btn);
+			});
+		window.close();
+	});
+
+	return new Promise((res, rej) => {
+		resolve = res;
+		reject = rej;
+	});
+}
+
 async function main() {
+	// Handle host permissions on Firefox:
+	const alreadyGranted = await checkPermissions();
+	if (!alreadyGranted) {
+		await setupPermissionRequest();
+	}
+
 	console.time("startup");
 
 	const metadata = await getMetadata();
@@ -189,19 +245,16 @@ async function main() {
 			return;
 		}
 
-		// console.time(`search_${id}`);
 		worker.postMessage([value, searchItems, id]);
 	});
 
 	worker.onmessage = (event) => {
 		const resId = event.data[1];
-		// console.timeEnd(`search_${resId}`);
 		if (resId !== lastId) {
 			return;
 		}
 
 		const results = event.data[0];
-		// console.log("results", results);
 		firstResult = results.length > 0 ? results[0] : null;
 		handleResults(results);
 	};
@@ -211,6 +264,7 @@ async function main() {
 		if (firstResult) {
 			window.open(firstResult.url, "_blank");
 		}
+		window.close();
 	});
 
 	document.addEventListener("keydown", (event) => {
