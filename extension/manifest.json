@@ -4,10 +4,6 @@
 	"version": "2.0.2",
 	"description": "Search the Roblox Creator Docs",
 	"author": "Stephen Leitnick",
-	"options_ui": {	
-		"page": "options/options.html",
-		"open_in_tab": false
-	},
 	"action": {
 		"default_popup": "popup/popup.html"
 	},

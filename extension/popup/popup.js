@@ -4,6 +4,14 @@ const resultsDiv = document.getElementById("results");
 
 const CHECK_RELEASE_INFO_INTERVAL = 1 * 60 * 60 * 1000;
 
+const permissions = {
+	origins: [
+		"*://*.github.com/*",
+		"*://github.com/*",
+		"*://objects.githubusercontent.com/*",
+	],
+};
+
 let firstResult = null;
 
 async function getMetadataFromCache() {
@@ -149,14 +157,6 @@ function focusOnPrevElement() {
 		prevFocused.focus();
 	}
 }
-
-const permissions = {
-	origins: [
-		"*://*.github.com/*",
-		"*://github.com/*",
-		"*://objects.githubusercontent.com/*",
-	],
-};
 
 async function checkPermissions() {
 	if (typeof browser === "undefined") return Promise.resolve(true);
