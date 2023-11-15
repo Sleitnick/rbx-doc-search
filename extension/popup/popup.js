@@ -41,9 +41,11 @@ async function fetchMetadataFromRelease(releaseInfo) {
 	const tagName = releaseInfo.tag_name;
 
 	const asset = releaseInfo.assets.find((asset) => asset.name === "files_metadata.json");
-	const downloadUrl = asset.browser_download_url;
 
-	const metadata = await (await fetch(downloadUrl)).json();
+	const metadataRes = await fetch(asset.url, {headers: {"Accept": "application/octet-stream"}, credentials: "omit"});
+	const metadataBlob = await metadataRes.blob();
+	const metadata = JSON.parse(await metadataBlob.text());
+
 	cacheMetadata(metadata, tagName);
 
 	return metadata;
@@ -86,8 +88,6 @@ function createResultChild(item, index) {
 }
 
 function handleResults(results) {
-	console.log("RESULTS", results);
-
 	resultsDiv.innerHTML = "";
 	if (results === undefined) return;
 

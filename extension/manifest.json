@@ -1,12 +1,11 @@
 {
 	"manifest_version": 3,
 	"name": "Roblox Docs Search",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"description": "Search the Roblox Creator Docs",
 	"author": "Stephen Leitnick",
 	"options_ui": {	
 		"page": "options/options.html",
-		"browser_style": true,
 		"open_in_tab": false
 	},
 	"action": {
@@ -32,11 +31,17 @@
 		"storage"
 	],
 	"host_permissions": [
-		"https://*.github.com/*",
-		"https://github.com/*",
-		"https://objects.githubusercontent.com/*"
+		"*://*.github.com/*",
+		"*://github.com/*",
+		"*://objects.githubusercontent.com/*"
 	],
 	"content_security_policy": {
-		"extension_pages": "default-src 'self' 'wasm-unsafe-eval'; connect-src https://*.github.com https://github.com https://objects.githubusercontent.com"
+		"extension_pages": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; connect-src https://*.github.com https://github.com https://objects.githubusercontent.com"
+	},
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "{04926EA5-7531-4649-884C-1F0AC9C01679}",
+			"strict_min_version": "109.0"
+		}
 	}
 }

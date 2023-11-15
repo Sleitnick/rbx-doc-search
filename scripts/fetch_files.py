@@ -1,12 +1,12 @@
 import requests
-import base64
 import re
 import yaml
+import io
+from zipfile import ZipFile
 
 import write
 import config
-
-from concurrent.futures import ThreadPoolExecutor
+from task_timer import TaskTimer
 
 try:
 	from yaml import CLoader as Loader
@@ -17,47 +17,58 @@ metadata_pattern = re.compile("---(.+?)---", re.DOTALL)
 
 engine_ref_items = ["properties", "methods", "events", "callbacks", "items", "functions"]
 
-def fetch_tree_data():
-	data_res = requests.get("https://api.github.com/repos/Roblox/creator-docs/git/trees/main:content/en-us?recursive=true", headers=config.req_headers)
+def fetch_zip() -> ZipFile:
+	print("downloading archive")
+	data_res = requests.get("https://github.com/Roblox/creator-docs/archive/refs/heads/main.zip", headers=config.req_headers)
 	data_res.raise_for_status()
 
-	data = data_res.json()
-	return data
+	zip_file = ZipFile(io.BytesIO(data_res.content), "r")
 
+	return zip_file
 
-def get_markdown_and_yaml_files(tree):
-	md_yaml_files = list(map(
-		lambda item: "content/en-us/" + item["path"],
-		filter(lambda item: item["type"] == "blob" and (item["path"].endswith(".md") or item["path"].endswith(".yaml")), tree)
-	))
+def get_zip_filepaths(zip_file: ZipFile):
+	return list(
+		filter(
+			lambda filename: "content/en-us" in filename and (filename.endswith(".md") or filename.endswith(".yaml")),
+			map(
+				lambda zip_info: zip_info.filename,
+				zip_file.filelist
+			)
+		)
+	)
 
-	return md_yaml_files
+def zip_filepaths_to_urls(filepaths: list[str]):
+	return list(
+		map(
+			lambda filename: filename[filename.find("content/en-us/"):],
+			filepaths
+		)
+	)
 
-
-def get_md_metadata(filepath, content):
+def get_md_metadata(filepath, url, content):
 	metadata_match = metadata_pattern.match(content)
 	
 	if metadata_match is None:
 		print("> Failed to get metadata")
 		return {
-			"path": filepath,
+			"path": url,
 		}
 	else:
 		metadata_str = metadata_match.group(1)
 		metadata_dict = yaml.load(metadata_str, Loader=Loader)
 		
-		metadata_dict["path"] = filepath
+		metadata_dict["path"] = url
 		metadata_dict["type"] = "article"
 		
 		return metadata_dict
 
-def get_yaml_metadata(filepath, content):
+def get_yaml_metadata(filepath, url, content):
 	data = yaml.load(content, Loader=Loader)
 
 	metadata_dict = dict()
 	metadata_dict["title"] = data["name"]
 	metadata_dict["type"] = data["type"]
-	metadata_dict["path"] = filepath
+	metadata_dict["path"] = url
 
 	if "summary" in data and data["summary"]:
 		metadata_dict["description"] = data["summary"]
@@ -92,55 +103,40 @@ def get_yaml_metadata(filepath, content):
 	
 	return metadata_dict
 
-def get_metadata(md_yaml_filepath):
-	print("Fetching metadata for: " + md_yaml_filepath)
-
-	res = requests.get(f"https://api.github.com/repos/Roblox/creator-docs/contents/{md_yaml_filepath}?ref=main", headers=config.req_headers)
-	res.raise_for_status()
-
-	content_encoded = res.json()["content"]
-	content = base64.b64decode(content_encoded.encode("utf-8")).decode("utf-8")
+def get_metadata(zip_file: ZipFile, md_yaml_filepath: str, url: str):
+	with zip_file.open(md_yaml_filepath, "r") as file:
+		content = file.read().decode("utf-8")
 
 	if md_yaml_filepath.endswith(".md"):
-		return get_md_metadata(md_yaml_filepath, content)
+		return get_md_metadata(md_yaml_filepath, url, content)
 	elif md_yaml_filepath.endswith(".yaml"):
-		return get_yaml_metadata(md_yaml_filepath, content)
-
-debug_one = None
-# debug_one = "content/en-us/reference/engine/libraries/utf8.yaml"
+		return get_yaml_metadata(md_yaml_filepath, url, content)
 
 def main():
-	if debug_one is not None:
-		print("DEBUG " + debug_one)
-		data = get_metadata(debug_one)
-		print(data)
-		return
+	timer = TaskTimer()
+
+	timer.start("download")
+	with fetch_zip() as zip_file:
+		timer.stop()
+
+		timer.start("prepare")
+		filepaths = get_zip_filepaths(zip_file)
+		urls = zip_filepaths_to_urls(filepaths)
+		timer.stop()
+
+		print(f"parsing metadata [{len(filepaths)} files]")
+
+		timer.start("parse")
+		metadata = list()
+		for filepath, url in zip(filepaths, urls):
+			metadata.append(get_metadata(zip_file, filepath, url))
+		timer.stop()
+
+		timer.start("write")
+		write.write_json(metadata, "files_metadata.json")
+		timer.stop()
 	
-	data = fetch_tree_data()
-
-	sha = data["sha"]
-	tree = data["tree"]
-	truncated = data["truncated"]
-
-	# TODO: Do a recursive scan if truncated
-	if truncated:
-		print("Cannot handle truncated paths yet")
-		exit(1)
-
-	md_yaml_files = get_markdown_and_yaml_files(tree)
-	write.write_json(md_yaml_files, "files.json")
-
-	# Pool can't be too big, or else GitHub rate limits will kick in
-	max_threads = 3
-
-	with ThreadPoolExecutor(max_workers=max_threads) as pool:
-		all_metadata = list(pool.map(get_metadata, md_yaml_files))
-	
-	write.write_json(all_metadata, "files_metadata.json")
-
-	write.write_text(sha[:7], "sha.txt")
-
-	print("Documentation metadata collection completed")
+	timer.output("done")
 
 if __name__ == "__main__":
 	main()
