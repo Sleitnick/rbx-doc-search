@@ -11,9 +11,13 @@ Data aggregation is automated through a daily workflow, which creates a release 
 
 This process helps ensure that the extension is using up-to-date metadata for search.
 
-## [Extension](https://chromewebstore.google.com/detail/roblox-docs-search/mejgpalbcgoooijaoomkcmcjeihhlehf)
+## Extension
 
-The extension can be found in the `extension` and `src` directories. The `extension` directory contains the core extension code. The search algorithm has been moved over to WASM to speed up the process, which can be found in the `src` directory.
+Links:
+- [Chrome & Edge](https://chromewebstore.google.com/detail/roblox-docs-search/mejgpalbcgoooijaoomkcmcjeihhlehf)
+- [Firefox](https://addons.mozilla.org/en-US/firefox/addon/roblox-docs-search/)
+
+The extension code can be found in the `extension` and `src` directories. The `extension` directory contains the core extension code. The search algorithm has been moved over to WASM to speed up the process, which can be found in the `src` directory.
 
 ### WASM Compilation
 
