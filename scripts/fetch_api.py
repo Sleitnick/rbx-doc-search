@@ -28,11 +28,24 @@ def fetch_api_dump(version):
 	return download_res.json()
 
 
+def fetch_latest_sha():
+	"""Fetch the latest commit SHA for the Roblox creator-docs repository."""
+
+	commit_res = requests.get("https://api.github.com/repos/Roblox/creator-docs/commits/main", headers=config.req_headers)
+	commit_res.raise_for_status()
+	commit = commit_res.json()
+	sha = commit["sha"]
+
+	return sha
+
+
 if __name__ == "__main__":
 	rbx_version = fetch_latest_roblox_version()
 	api_dump = fetch_api_dump(rbx_version)
+	sha = fetch_latest_sha()
 
 	write.write_text(rbx_version[8:], "rbx_version_hash.txt")
 	write.write_json(api_dump, "api_dump.json")
+	write.write_text(sha[:7], "sha.txt")
 
 	print("API dump collection completed")
