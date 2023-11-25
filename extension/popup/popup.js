@@ -85,7 +85,7 @@ async function openUrl(url) {
 	if (onDocSite) {
 		await chrome.tabs.sendMessage(activeTab.id, {url: url});
 	} else {
-		window.open(url, onDocSite ? "_self" : "_blank");
+		await chrome.tabs.create({url: url, active: true});
 	}
 
 	window.close();
@@ -178,13 +178,13 @@ function focusOnPrevElement() {
 }
 
 async function checkPermissions() {
-	if (typeof browser === "undefined") return Promise.resolve(true);
-	return await browser.permissions.contains(permissions);
+	if (typeof chrome === "undefined") return Promise.resolve(true);
+	return await chrome.permissions.contains(permissions);
 }
 
 async function attemptRequestPermissions() {
-	if (typeof browser === "undefined") return Promise.resolve(true);
-	return await browser.permissions.request(permissions);
+	if (typeof chrome === "undefined") return Promise.resolve(true);
+	return await chrome.permissions.request(permissions);
 }
 
 async function setupPermissionRequest() {
@@ -290,7 +290,6 @@ async function main() {
 		if (firstResult) {
 			openUrl(firstResult.url).catch(console.error);
 		}
-		window.close();
 	});
 
 	document.addEventListener("keydown", (event) => {
