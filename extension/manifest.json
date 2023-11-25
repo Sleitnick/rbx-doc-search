@@ -7,6 +7,12 @@
 	"action": {
 		"default_popup": "popup/popup.html"
 	},
+	"content_scripts": [
+		{
+			"matches": ["https://create.roblox.com/docs/*"],
+			"js": ["content/content.js"]
+		}
+	],
 	"commands": {
 		"_execute_action": {
 			"suggested_key": {
@@ -24,7 +30,8 @@
 		"128": "icons/128.png"
 	},
 	"permissions": [
-		"storage"
+		"storage",
+		"tabs"
 	],
 	"host_permissions": [
 		"*://*.github.com/*",
