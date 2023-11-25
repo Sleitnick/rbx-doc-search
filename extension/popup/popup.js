@@ -221,6 +221,8 @@ async function main() {
 		await setupPermissionRequest();
 	}
 
+	inputElement.focus();
+
 	console.time("startup");
 
 	const metadata = await getMetadata();
@@ -252,7 +254,7 @@ async function main() {
 	const worker = new Worker("search_worker.js");
 	let lastId = 0;
 
-	inputElement.addEventListener("input", (event) => {
+	const onInput = (event) => {
 		const value = event.target.value.trim();
 
 		lastId++;
@@ -265,7 +267,12 @@ async function main() {
 		}
 
 		worker.postMessage([value, searchItems, id]);
-	});
+	};
+
+	inputElement.addEventListener("input", onInput);
+	if (inputElement.value !== "") {
+		inputElement.dispatchEvent(new Event("input", {bubbles: true}));
+	}
 
 	worker.onmessage = (event) => {
 		const resId = event.data[1];
@@ -300,8 +307,6 @@ async function main() {
 			event.preventDefault();
 		}
 	});
-
-	inputElement.focus();
 
 	console.timeEnd("startup");
 }
