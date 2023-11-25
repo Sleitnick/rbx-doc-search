@@ -74,6 +74,23 @@ async function getMetadata() {
 	}
 }
 
+async function openUrl(url) {
+	const tabs = await chrome.tabs.query({active: true, currentWindow: true});
+
+	const activeTab = tabs[0];
+	if (!activeTab) return;
+
+	const onDocSite = activeTab.url.startsWith("https://create.roblox.com/docs/");
+
+	if (onDocSite) {
+		await chrome.tabs.sendMessage(activeTab.id, {url: url});
+	} else {
+		window.open(url, onDocSite ? "_self" : "_blank");
+	}
+
+	window.close();
+}
+
 function createResultChild(item, index) {
 	const a = document.createElement("a");
 	a.setAttribute("href", item.url);
@@ -81,11 +98,12 @@ function createResultChild(item, index) {
 	a.dataset.index = index;
 	a.className = "result-item-link";
 	a.id = `result-item-${index}`;
+
 	a.addEventListener("click", (e) => {
 		e.preventDefault();
-		window.open(item.url, "_blank");
-		window.close();
+		openUrl(item.url).catch(console.error);
 	});
+
 	const div = document.createElement("div");
 	div.className = "result-item";
 	const h3 = document.createElement("h3");
@@ -97,6 +115,7 @@ function createResultChild(item, index) {
 	div.appendChild(h3);
 	div.appendChild(p);
 	a.appendChild(div);
+
 	return a;
 }
 
@@ -262,7 +281,7 @@ async function main() {
 	searchForm.addEventListener("submit", (event) => {
 		event.preventDefault();
 		if (firstResult) {
-			window.open(firstResult.url, "_blank");
+			openUrl(firstResult.url).catch(console.error);
 		}
 		window.close();
 	});

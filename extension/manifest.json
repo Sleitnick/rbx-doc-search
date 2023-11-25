@@ -1,12 +1,18 @@
 {
 	"manifest_version": 3,
 	"name": "Roblox Docs Search",
-	"version": "2.1.0",
+	"version": "2.1.1",
 	"description": "Search the Roblox Creator Docs",
 	"author": "Stephen Leitnick",
 	"action": {
 		"default_popup": "popup/popup.html"
 	},
+	"content_scripts": [
+		{
+			"matches": ["https://create.roblox.com/docs/*"],
+			"js": ["content/content.js"]
+		}
+	],
 	"commands": {
 		"_execute_action": {
 			"suggested_key": {
@@ -24,7 +30,8 @@
 		"128": "icons/128.png"
 	},
 	"permissions": [
-		"storage"
+		"storage",
+		"tabs"
 	],
 	"host_permissions": [
 		"*://*.github.com/*",
