@@ -11,6 +11,8 @@ Data aggregation is automated through a daily workflow, which creates a release 
 
 This process helps ensure that the extension is using up-to-date metadata for search.
 
+A new release is created for each aggregation collected. If no changes were found since the last release, the release is skipped.
+
 ## Extension
 
 Links:
