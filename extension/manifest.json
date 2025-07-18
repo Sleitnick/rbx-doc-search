@@ -36,10 +36,11 @@
 	"host_permissions": [
 		"*://*.github.com/*",
 		"*://github.com/*",
-		"*://objects.githubusercontent.com/*"
+		"*://objects.githubusercontent.com/*",
+		"*://release-assets.githubusercontent.com/*"
 	],
 	"content_security_policy": {
-		"extension_pages": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; connect-src https://*.github.com https://github.com https://objects.githubusercontent.com"
+		"extension_pages": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; connect-src https://*.github.com https://github.com https://objects.githubusercontent.com https://release-assets.githubusercontent.com"
 	},
 	"browser_specific_settings": {
 		"gecko": {
