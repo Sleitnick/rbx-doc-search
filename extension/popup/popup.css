@@ -11,7 +11,7 @@ body {
 	padding: 10px 10px 10px 40px;
 	font-size: 16px;
 	border: 2px solid #cccccc;
-	border-radius: 4px;
+	border-radius: 8px;
 	background-image: url("../icons/search.png");
 	background-repeat: no-repeat;
 	background-position: 10px 10px;
@@ -23,7 +23,7 @@ body {
 
 #search:focus {
 	outline: none !important;
-	border-color: #3399FF;
+	border-color: var(--theme-blue);
 	box-shadow: 0 0 5px 0px #00000040;
 }
 
@@ -69,7 +69,7 @@ body {
 }
 
 .result-item-link:focus .result-item {
-	border-color: #3399FF;
+	border-color: var(--theme-blue);
 	box-shadow: 0 0 5px 0px #00000040;
 	background-color: hsl(0, 0%, var(--result-item-hover-lum));
 }
@@ -88,7 +88,7 @@ body {
 }
 
 #title a:hover {
-	color: #3399FF;
+	color: var(--theme-blue);
 }
 
 .hide {
@@ -97,7 +97,7 @@ body {
 
 .init-btn {
 	width: 100%;
-	border: 1px solid #3399FF;
+	border: 1px solid var(--theme-blue);
 	box-shadow: 0 0 5px 0px #00000040;
 	background-color: hsl(0, 0%, var(--button-lum));
 	color: hsl(0, 0%, var(--button-text-lum));
@@ -109,4 +109,25 @@ body {
 
 .init-btn:hover {
 	background-color: hsl(0, 0%, var(--button-hover-lum));
+}
+
+.spinner {
+	background: radial-gradient(farthest-side, var(--theme-blue) 94%,#0000) top/4px 4px no-repeat, conic-gradient(#0000 30%, var(--theme-blue));
+	-webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 4px), #000 0);
+	mask: radial-gradient(farthest-side, #0000 calc(100% - 4px), #000 0);
+	border-radius: 50%;
+	width: 16px;
+	height: 16px;
+	animation: spin 750ms linear infinite;
+	display: inline-block;
+}
+
+@keyframes spin {
+	100% { transform: rotate(1turn); }
+}
+
+#loading {
+	margin-top: 10px;
+	display: flex;
+	gap: 10px;
 }

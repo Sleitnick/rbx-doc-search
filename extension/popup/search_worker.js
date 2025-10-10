@@ -1,11 +1,9 @@
-importScripts("./pkg/search_test_wasm.js");
-
-console.log("initializing worker");
+importScripts("./pkg/doc_search_wasm.js");
 
 const { search } = wasm_bindgen;
 
 async function initWorker() {
-	await wasm_bindgen("./pkg/search_test_wasm_bg.wasm");
+	await wasm_bindgen({ module_or_path: "./pkg/doc_search_wasm_bg.wasm" });
 
 	const titles = [];
 
@@ -26,6 +24,9 @@ async function initWorker() {
 
 		postMessage([results, id]);
 	};
+
+	// Post message with ID of -1 to indicate worker is ready:
+	postMessage([[], -1]);
 }
 
 initWorker();

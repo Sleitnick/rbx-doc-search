@@ -19,7 +19,9 @@ impl Eq for SearchResult {}
 
 impl Ord for SearchResult {
     fn cmp(&self, other: &Self) -> Ordering {
-        self.score.partial_cmp(&other.score).unwrap_or(self.score.to_bits().cmp(&other.score.to_bits()))
+        self.score
+            .partial_cmp(&other.score)
+            .unwrap_or(self.score.to_bits().cmp(&other.score.to_bits()))
     }
 }
 
@@ -43,7 +45,7 @@ pub fn search(search_text: &str, titles: Vec<JsString>) -> Result<js_sys::Array,
     let results = js_sys::Array::new();
 
     let mut res: Vec<SearchResult> = vec![];
-    
+
     let t_len = search_text.len() as f32;
     let search_text = search_text.to_ascii_lowercase();
 
@@ -53,11 +55,16 @@ pub fn search(search_text: &str, titles: Vec<JsString>) -> Result<js_sys::Array,
             Some(s) => {
                 if s.to_ascii_lowercase().contains(&search_text) {
                     let s_len = s.len() as f32;
-                    let score = 1.0 - if s_len > t_len { t_len / s_len } else { s_len / t_len };
-                    push_sorted(&mut res, SearchResult{ score, index: i });
+                    let score = 1.0
+                        - if s_len > t_len {
+                            t_len / s_len
+                        } else {
+                            s_len / t_len
+                        };
+                    push_sorted(&mut res, SearchResult { score, index: i });
                 }
             }
-            None => continue
+            None => continue,
         };
     }
 
@@ -76,14 +83,14 @@ pub fn search(search_text: &str, titles: Vec<JsString>) -> Result<js_sys::Array,
                             }
                         }
                         if !found {
-                            push_sorted(&mut res, SearchResult{ score, index: idx });
+                            push_sorted(&mut res, SearchResult { score, index: idx });
                             if res.len() >= MAX_RESULTS_LEV {
                                 break;
                             }
                         }
                     }
                 }
-                None => continue
+                None => continue,
             };
         }
     }

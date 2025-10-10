@@ -269,13 +269,20 @@ async function main() {
 		worker.postMessage([value, searchItems, id]);
 	};
 
-	inputElement.addEventListener("input", onInput);
-	if (inputElement.value !== "") {
-		inputElement.dispatchEvent(new Event("input", {bubbles: true}));
-	}
+	const onWorkerReady = () => {
+		document.getElementById("loading").remove();
+		inputElement.addEventListener("input", onInput);
+		if (inputElement.value !== "") {
+			inputElement.dispatchEvent(new Event("input", {bubbles: true}));
+		}
+	};
 
 	worker.onmessage = (event) => {
 		const resId = event.data[1];
+		if (resId === -1) {
+			onWorkerReady();
+		}
+
 		if (resId !== lastId) {
 			return;
 		}
