@@ -13,9 +13,11 @@ try:
 except ImportError:
 	from yaml import Loader
 
+
 metadata_pattern = re.compile("---(.+?)---", re.DOTALL)
 
 engine_ref_items = ["properties", "methods", "events", "callbacks", "items", "functions"]
+
 
 def fetch_zip() -> ZipFile:
 	print("downloading archive")
@@ -25,6 +27,7 @@ def fetch_zip() -> ZipFile:
 	zip_file = ZipFile(io.BytesIO(data_res.content), "r")
 
 	return zip_file
+
 
 def get_zip_filepaths(zip_file: ZipFile):
 	return list(
@@ -37,6 +40,7 @@ def get_zip_filepaths(zip_file: ZipFile):
 		)
 	)
 
+
 def zip_filepaths_to_urls(filepaths: list[str]):
 	return list(
 		map(
@@ -44,6 +48,7 @@ def zip_filepaths_to_urls(filepaths: list[str]):
 			filepaths
 		)
 	)
+
 
 def get_md_metadata(filepath, url, content):
 	metadata_match = metadata_pattern.match(content)
@@ -61,6 +66,23 @@ def get_md_metadata(filepath, url, content):
 		metadata_dict["type"] = "article"
 		
 		return metadata_dict
+
+
+def plural_to_singular(s):
+	if s == "methods":
+		return "method"
+	elif s == "properties":
+		return "property"
+	elif s == "events":
+		return "event"
+	elif s == "items":
+		return "item"
+	elif s == "functions":
+		return "function"
+	elif s == "callbacks":
+		return "callback"
+	return s
+
 
 def get_yaml_metadata(filepath, url, content):
 	data = yaml.load(content, Loader=Loader)
@@ -91,7 +113,7 @@ def get_yaml_metadata(filepath, url, content):
 				continue
 
 			subitem = dict()
-			subitem["type"] = key
+			subitem["type"] = plural_to_singular(key)
 			if data["type"] == "enum":
 				subitem["title"] = data["name"] + "." + item["name"]
 			else:
@@ -103,6 +125,7 @@ def get_yaml_metadata(filepath, url, content):
 	
 	return metadata_dict
 
+
 def get_metadata(zip_file: ZipFile, md_yaml_filepath: str, url: str):
 	with zip_file.open(md_yaml_filepath, "r") as file:
 		content = file.read().decode("utf-8")
@@ -111,6 +134,7 @@ def get_metadata(zip_file: ZipFile, md_yaml_filepath: str, url: str):
 		return get_md_metadata(md_yaml_filepath, url, content)
 	elif md_yaml_filepath.endswith(".yaml"):
 		return get_yaml_metadata(md_yaml_filepath, url, content)
+
 
 def main():
 	timer = TaskTimer()
@@ -137,6 +161,7 @@ def main():
 		timer.stop()
 	
 	timer.output("done")
+
 
 if __name__ == "__main__":
 	main()

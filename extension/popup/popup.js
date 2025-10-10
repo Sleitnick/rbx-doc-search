@@ -1,6 +1,7 @@
 const searchForm = document.getElementById("search-form");
 const inputElement = document.getElementById("search");
 const resultsDiv = document.getElementById("results");
+const loadingDiv = document.getElementById("loading");
 
 const CHECK_RELEASE_INFO_INTERVAL = 1 * 60 * 60 * 1000;
 
@@ -13,6 +14,14 @@ const permissions = {
 };
 
 let firstResult = null;
+
+function showLoadingDiv() {
+	loadingDiv.classList.remove("hide");
+}
+
+function hideLoadingDiv() {
+	loadingDiv.classList.add("hide");
+}
 
 async function getMetadataFromCache() {
 	const res = await chrome.storage.local.get(["metadata"]);
@@ -46,6 +55,7 @@ async function getLatestReleaseInfo() {
 }
 
 async function fetchMetadataFromRelease(releaseInfo) {
+	showLoadingDiv();
 	const tagName = releaseInfo.tag_name;
 
 	const asset = releaseInfo.assets.find((asset) => asset.name === "files_metadata.json");
@@ -91,6 +101,13 @@ async function openUrl(url) {
 	window.close();
 }
 
+// function iconBox() {
+// 	const icon = document.createElement("img");
+// 	icon.classList.add("result-item-icon");
+// 	icon.src = "../icons/box.svg";
+// 	return icon;
+// }
+
 function createResultChild(item, index) {
 	const a = document.createElement("a");
 	a.setAttribute("href", item.url);
@@ -106,14 +123,18 @@ function createResultChild(item, index) {
 
 	const div = document.createElement("div");
 	div.className = "result-item";
+	// const icon = iconBox();
+	// div.append(icon);
+	const info = document.createElement("div");
 	const h3 = document.createElement("h3");
 	h3.className = "result-title";
 	h3.innerText = item.title;
 	const p = document.createElement("p");
 	p.className = "result-category";
 	p.innerText = item.type;
-	div.appendChild(h3);
-	div.appendChild(p);
+	div.append(info);
+	info.appendChild(h3);
+	info.appendChild(p);
 	a.appendChild(div);
 
 	return a;
@@ -221,7 +242,11 @@ async function main() {
 		await setupPermissionRequest();
 	}
 
-	inputElement.focus();
+	// Firefox doesn't like to respect autofocus sporadically, so attempt to
+	// focus after a little bit of time has passed:
+	setTimeout(() => {
+		inputElement.focus();
+	}, 250);
 
 	console.time("startup");
 
@@ -270,7 +295,7 @@ async function main() {
 	};
 
 	const onWorkerReady = () => {
-		document.getElementById("loading").remove();
+		hideLoadingDiv();
 		inputElement.addEventListener("input", onInput);
 		if (inputElement.value !== "") {
 			inputElement.dispatchEvent(new Event("input", {bubbles: true}));
