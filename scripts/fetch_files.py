@@ -88,8 +88,8 @@ def get_yaml_metadata(filepath, url, content):
 	data = yaml.load(content, Loader=Loader)
 
 	metadata_dict = dict()
-	metadata_dict["title"] = data["name"]
-	metadata_dict["type"] = data["type"]
+	metadata_dict["title"] = data["name"] if "name" in data else "<unknown>"
+	metadata_dict["type"] = data["type"] if "type" in data else "<unknown>"
 	metadata_dict["path"] = url
 
 	if "summary" in data and data["summary"]:

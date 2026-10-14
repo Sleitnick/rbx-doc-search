@@ -1,6 +1,6 @@
 import os
 
-token = os.environ["GH_PAT"]
+token = os.environ["GH_PAT"] if "GH_PAT" in os.environ else ""
 
 req_headers = {
 	"Authorization": f"Bearer {token}",
